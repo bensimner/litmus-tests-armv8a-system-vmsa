@@ -1,0 +1,5 @@
+Date: 2025-03-14
+Test: WRC.TRR.inv+po+dsb
+Description:
+  Final condition on X2 was erroneously negated, making the test trivially allowed.
+Fixed-By: 265b937211b33844623f982b7beb0734570cc987
