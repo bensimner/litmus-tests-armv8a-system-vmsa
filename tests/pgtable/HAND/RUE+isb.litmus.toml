@@ -1,0 +1,50 @@
+arch = "AArch64"
+name = "RUE+isb"
+symbolic = ["x"]
+
+page_table_setup = """
+intermediate ipa1;
+physical pa1;
+
+*pa1 = 0;
+
+s1table new_table 0x2C0000 {
+    identity 0x1000 with code;
+    x |-> invalid;
+    x ?-> pa1;
+};
+
+identity 0x1000 with code;
+"""
+
+[thread.0]
+code = """
+    STR X0,[X2]
+    STR X1,[X2]
+    MSR TTBR0_EL1,X3
+    ISB
+    MOV X1,#1
+    LDR X3,[X4]
+"""
+
+[thread.0.reset]
+R0 = "mkdesc3(oa=pa1)"
+R1 = "extz(0x0, 64)"
+R2 = "pte3(x, new_table)"
+R3 = "ttbr(asid=0x01, base=new_table)"
+R4 = "x"
+"VBAR_EL1" = "0x1000"
+"PSTATE.EL" = "0b01"
+"PSTATE.SP" = "0b1"
+
+[section.thread1_el1_handler]
+address = "0x1200"
+code = """
+    MRS X13,ELR_EL1
+    ADD X13,X13,#4
+    MSR ELR_EL1,X13
+    ERET
+"""
+
+[final]
+assertion = "0:X1=1"
