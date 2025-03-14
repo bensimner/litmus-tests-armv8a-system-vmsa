@@ -63,4 +63,4 @@ R3 = "pte3(x, page_table_base)"
 
 
 [final]
-assertion = "1:X0=1 & 2:X0=1 & ~2:X2=0"
+assertion = "1:X0=1 & 2:X0=1 & 2:X2=0"
